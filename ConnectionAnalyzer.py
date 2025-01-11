@@ -28,6 +28,7 @@ class ConnectionAnalyzer:
             if elapsed >= self.TIME_TO_LEARN:
                 self.state = "DETECT"
                 print("finished learning")
+
                 self.threshold = self.connection_distribution.getMaxDeviation() * (100 + self.THRESHOLD_BUFFER) / 100
                 print("threshold: ", threshold)
                 print("mean entropy: ", self.connection_distribution.calculateMean())
@@ -35,7 +36,7 @@ class ConnectionAnalyzer:
                 
         elif self.state == "DETECT":
             entropy = self.detection_distribution.collect(timestamp, packet)
-            if entropy and entropy - self.connection_distribution.calculateMean() > self.threshold:
+            if threshold and entropy and entropy - self.connection_distribution.calculateMean() > self.threshold:
                 print("alert happened at entropy value ", entropy)
                 self.state = "ALERT"
 
@@ -43,7 +44,7 @@ class ConnectionAnalyzer:
             print("alerting")
             entropy = self.detection_distribution.collect(timestamp, packet)
             threshold = self.connection_distribution.getMaxDeviation() * (100 + self.THRESHOLD_BUFFER) / 100
-            if entropy - self.connection_distribution.calculateMean() <= threshold:
+            if entropy and threshold and entropy - self.connection_distribution.calculateMean() <= threshold:
                 if not self.clearTime: 
                     self.clearTime = timestamp
                 else:
